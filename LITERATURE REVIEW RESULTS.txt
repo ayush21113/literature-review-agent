@@ -1,0 +1,19 @@
+ LITERATURE REVIEW RESULTS
+========================================
+
+ Query: transformer architectures in NLP
+ Generated: 2024-01-15T10:30:00
+
+ EVALUATION SCORES:
+   Overall Score: 0.85
+   Content Coverage: 0.78
+   Structure Quality: 0.90
+
+ ANALYZED PAPERS:
+1. Attention Is All You Need
+   Authors: Vaswani, Shazeer, Parmar...
+   Year: 2017 | Citations: 80000
+   Summary: Introduces transformer architecture...
+
+ LITERATURE REVIEW:
+The transformer architecture has revolutionized NLP...

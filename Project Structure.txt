@@ -1,0 +1,7 @@
+literature-review-agent/
+├── main.py                 # Main application
+├── requirements.txt        # Dependencies
+├── evaluation_metrics.py   # Quality evaluation
+├── fine_tuning_example.py  # Fine-tuning examples
+├── config.py              # Configuration management
+└── README.md             # This file

@@ -1,0 +1,93 @@
+# requirements.txt
+transformers>=4.30.0
+torch>=2.0.0
+requests>=2.28.0
+numpy>=1.21.0
+asyncio
+dataclasses-json
+rouge-score
+nltk
+scikit-learn
+
+# evaluation_metrics.py
+import numpy as np
+from rouge_score import rouge_scorer
+from sklearn.metrics.precision_recall_fscore_support import precision_recall_fscore_support
+import nltk
+from nltk.translate.bleu_score import sentence_bleu
+from nltk.tokenize import word_tokenize
+
+try:
+    nltk.download('punkt', quiet=True)
+except:
+    pass
+
+class EvaluationMetrics:
+    def __init__(self):
+        self.rouge_scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+    
+    def calculate_rouge_scores(self, generated_text: str, reference_text: str) -> dict:
+        """Calculate ROUGE scores for text generation quality"""
+        return self.rouge_scorer.score(reference_text, generated_text)
+    
+    def calculate_content_coverage(self, papers: list, review: str) -> float:
+        """Calculate how well the review covers the paper content"""
+        all_keywords = set()
+        mentioned_keywords = set()
+        
+        # Extract keywords from papers
+        for paper in papers:
+            if hasattr(paper, 'abstract'):
+                keywords = set(word_tokenize(paper.abstract.lower())[:20])  # Simple keyword extraction
+                all_keywords.update(keywords)
+        
+        # Check which keywords are mentioned in review
+        review_words = set(word_tokenize(review.lower()))
+        mentioned_keywords = all_keywords.intersection(review_words)
+        
+        if not all_keywords:
+            return 0.0
+            
+        return len(mentioned_keywords) / len(all_keywords)
+    
+    def calculate_structure_quality(self, review: dict) -> float:
+        """Evaluate the structure and organization of the review"""
+        score = 0.0
+        required_sections = ['review', 'research_gaps', 'key_trends', 'future_directions']
+        
+        # Check presence of required sections
+        for section in required_sections:
+            if section in review and review[section]:
+                score += 0.25
+        
+        # Check review length
+        review_text = review.get('review', '')
+        if len(review_text) > 500:
+            score += 0.2
+        elif len(review_text) > 200:
+            score += 0.1
+            
+        return min(score, 1.0)
+    
+    def evaluate_complete_review(self, papers: list, analyses: list, review: dict) -> dict:
+        """Comprehensive evaluation of the literature review"""
+        scores = {}
+        
+        # Content coverage
+        scores['content_coverage'] = self.calculate_content_coverage(papers, review['review'])
+        
+        # Structure quality
+        scores['structure_quality'] = self.calculate_structure_quality(review)
+        
+        # Gap analysis quality
+        gaps = review.get('research_gaps', [])
+        scores['gap_analysis_quality'] = min(len(gaps) / 5, 1.0)
+        
+        # Trend identification
+        trends = review.get('key_trends', [])
+        scores['trend_identification'] = min(len(trends) / 3, 1.0)
+        
+        # Overall score
+        scores['overall_quality'] = np.mean(list(scores.values()))
+        
+        return scores
