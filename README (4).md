@@ -1,4 +1,7 @@
 # AI Literature Review Agent
+Author: Ayush Kumar  
+University: Indian Institute of Technology Kanpur  
+Department: Electrical Engineering
 
 A functional AI agent that automates the academic literature review process by searching, analyzing, synthesizing, and evaluating research papers into structured outputs.
 
